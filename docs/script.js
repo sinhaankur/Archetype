@@ -129,12 +129,16 @@ let answers = state.answers || {}
 let gender = state.gender || "male"
 let mode = state.mode || "standard"
 let rendering = false
+let recentlyAnsweredQuestionId = null
+let motionObserver = null
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
 requestAnimationFrame(() => document.body.classList.remove("js-loading"))
 initConfigControls()
 updateQuestionCountUI()
 renderQuestions()
 updateProgress()
+initFramerUX()
 
 calculateButton.addEventListener("click", () => {
   const active = getActiveQuestions()
@@ -270,6 +274,7 @@ function renderQuestions() {
       input.value = String(rating)
       input.checked = selectedValue === rating
       input.addEventListener("change", () => {
+        recentlyAnsweredQuestionId = question.id
         answers[question.id] = rating
         persistState()
         renderQuestions()
@@ -287,6 +292,8 @@ function renderQuestions() {
   })
 
   rendering = false
+  syncFramerMotion()
+  animateRecentlyAnsweredQuestion()
 }
 
 function updateProgress() {
@@ -389,6 +396,7 @@ function renderResults(averages, ranking) {
   resultCard.classList.remove("is-hidden")
   requestAnimationFrame(() => resultCard.classList.add("is-visible"))
   resultCard.scrollIntoView({ behavior: "smooth", block: "start" })
+  syncFramerMotion()
 
   document.querySelectorAll(".mini-progress-fill").forEach((bar, i) => {
     const target = bar.style.width
@@ -470,4 +478,79 @@ function loadState() {
 
 function persistState() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, gender, mode }))
+}
+
+function initFramerUX() {
+  wireSpringPressInteractions(document)
+  if (prefersReducedMotion) return
+  initMotionObserver()
+  syncFramerMotion()
+}
+
+function initMotionObserver() {
+  if (motionObserver || !("IntersectionObserver" in window)) return
+
+  motionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("motion-in")
+          motionObserver.unobserve(entry.target)
+        }
+      })
+    },
+    { threshold: 0.16, rootMargin: "0px 0px -8% 0px" }
+  )
+}
+
+function syncFramerMotion() {
+  wireSpringPressInteractions(document)
+  if (prefersReducedMotion) return
+
+  const motionTargets = document.querySelectorAll(
+    ".hero, .config-bar, .sidebar-card, .question-card, .result-card, .panel, .summary-panel, .trait-row, .ranking-row"
+  )
+
+  motionTargets.forEach((el, idx) => {
+    if (!el.classList.contains("motion-item")) {
+      el.classList.add("motion-item")
+      el.style.setProperty("--motion-delay", `${Math.min(idx * 32, 240)}ms`)
+    }
+
+    if (motionObserver) {
+      motionObserver.observe(el)
+    } else {
+      el.classList.add("motion-in")
+    }
+  })
+}
+
+function wireSpringPressInteractions(root) {
+  root.querySelectorAll(".button, .config-chip span, .rating-box").forEach((el) => {
+    if (el.dataset.springWired === "1") return
+    el.dataset.springWired = "1"
+
+    const clear = () => el.classList.remove("spring-press")
+    el.addEventListener("pointerdown", () => el.classList.add("spring-press"))
+    el.addEventListener("pointerup", clear)
+    el.addEventListener("pointerleave", clear)
+    el.addEventListener("blur", clear)
+  })
+}
+
+function animateRecentlyAnsweredQuestion() {
+  if (prefersReducedMotion || recentlyAnsweredQuestionId === null) return
+
+  const card = document.querySelector(`[data-question-id="${recentlyAnsweredQuestionId}"]`)
+  recentlyAnsweredQuestionId = null
+  if (!card || typeof card.animate !== "function") return
+
+  card.animate(
+    [
+      { transform: "translateY(10px) scale(0.985)", opacity: 0.82 },
+      { transform: "translateY(0) scale(1.01)", opacity: 1, offset: 0.7 },
+      { transform: "translateY(0) scale(1)", opacity: 1 },
+    ],
+    { duration: 420, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }
+  )
 }

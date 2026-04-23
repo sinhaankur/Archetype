@@ -69,6 +69,25 @@ button, input { font: inherit; }
   box-shadow: var(--shadow);
 }
 
+/* ── Framer-style motion primitives ─────────────────────── */
+.motion-item {
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+  transition:
+    opacity 420ms var(--ease-out),
+    transform 520ms var(--ease-spring);
+  transition-delay: var(--motion-delay, 0ms);
+}
+
+.motion-item.motion-in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.spring-press {
+  transform: translate(-1px, -1px) scale(0.96) !important;
+}
+
 /* ── Hero ────────────────────────────────────────────────── */
 .hero {
   display: grid;
@@ -869,5 +888,24 @@ button, input { font: inherit; }
   }
 
   .floating-progress { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-item,
+  .motion-item.motion-in {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .button,
+  .rating-box,
+  .question-card,
+  .result-card,
+  .panel,
+  .summary-panel {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
