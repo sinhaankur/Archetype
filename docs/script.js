@@ -262,8 +262,9 @@ function renderQuestions() {
   if (rendering) return
   rendering = true
   form.innerHTML = ""
+  const activeQuestions = getActiveQuestions()
 
-  getActiveQuestions().forEach((question, idx) => {
+  activeQuestions.forEach((question, idx) => {
     const fragment = questionTemplate.content.cloneNode(true)
     const fieldset = fragment.querySelector("fieldset")
     const traitPill = fragment.querySelector(".trait-pill")
@@ -293,12 +294,29 @@ function renderQuestions() {
       input.value = String(rating)
       input.checked = selectedValue === rating
       input.addEventListener("change", () => {
+        const nextQuestion = activeQuestions[idx + 1]
         recentlyAnsweredQuestionId = question.id
         answers[question.id] = rating
         persistState()
         renderQuestions()
         updateProgress()
         hideResults()
+
+        if (window.matchMedia("(max-width: 720px)").matches && nextQuestion) {
+          window.setTimeout(() => {
+            document
+              .querySelector(`[data-question-id="${nextQuestion.id}"]`)
+              ?.scrollIntoView({ behavior: "smooth", block: "center" })
+          }, 120)
+        }
+
+        if (window.matchMedia("(pointer: coarse)").matches && "vibrate" in navigator) {
+          try {
+            navigator.vibrate(8)
+          } catch {
+            // Ignore vibration errors on unsupported devices/browsers.
+          }
+        }
       })
 
       valueNode.textContent = String(rating)
