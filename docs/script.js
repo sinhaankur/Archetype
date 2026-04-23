@@ -150,6 +150,8 @@ const MOBILE_BREAKPOINT = 720
 let hasPlayedTapWelcome = false
 let pulseTimeoutId = null
 let mobileQuestionIndex = 0
+const ANALYTICS_NAMESPACE = "archetype-gh-pages-sinhaankur"
+const UNIQUE_USER_KEY = "archetype-unique-user-v1"
 
 requestAnimationFrame(() => document.body.classList.remove("js-loading"))
 initConfigControls()
@@ -161,6 +163,7 @@ initWelcomeAnimation()
 initDelightInteractions()
 initMobilePagingSync()
 initMethodLinkBehavior()
+trackUsageMetrics()
 
 calculateButton.addEventListener("click", () => {
   const active = getActiveQuestions()
@@ -775,4 +778,25 @@ function playPagePulse() {
   document.body.classList.add("page-pulse")
   if (pulseTimeoutId) window.clearTimeout(pulseTimeoutId)
   pulseTimeoutId = window.setTimeout(() => document.body.classList.remove("page-pulse"), 240)
+}
+
+function trackUsageMetrics() {
+  // Visitors: every page load.
+  hitCounter("visitors")
+
+  // Users: first visit on this browser/device only.
+  if (!window.localStorage.getItem(UNIQUE_USER_KEY)) {
+    hitCounter("users")
+      .then(() => {
+        window.localStorage.setItem(UNIQUE_USER_KEY, "1")
+      })
+      .catch(() => {
+        // Leave key unset so we can retry on next load.
+      })
+  }
+}
+
+function hitCounter(metric) {
+  const url = `https://api.countapi.xyz/hit/${ANALYTICS_NAMESPACE}/${metric}`
+  return fetch(url, { method: "GET", mode: "cors", cache: "no-store" })
 }
