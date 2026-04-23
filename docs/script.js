@@ -132,6 +132,8 @@ let rendering = false
 let recentlyAnsweredQuestionId = null
 let motionObserver = null
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+let hasPlayedTapWelcome = false
+let pulseTimeoutId = null
 
 requestAnimationFrame(() => document.body.classList.remove("js-loading"))
 initConfigControls()
@@ -140,6 +142,7 @@ renderQuestions()
 updateProgress()
 initFramerUX()
 initWelcomeAnimation()
+initDelightInteractions()
 
 calculateButton.addEventListener("click", () => {
   const active = getActiveQuestions()
@@ -562,10 +565,17 @@ function animateRecentlyAnsweredQuestion() {
 }
 
 function initWelcomeAnimation() {
+  showWelcomeBanner("Ready to discover your archetype?")
+}
+
+function showWelcomeBanner(message) {
+  const existing = document.querySelector(".welcome-banner")
+  existing?.remove()
+
   const banner = document.createElement("div")
   banner.className = "welcome-banner"
   banner.setAttribute("aria-live", "polite")
-  banner.innerHTML = '<span class="welcome-kicker">Welcome</span><strong>Ready to discover your archetype?</strong>'
+  banner.innerHTML = `<span class="welcome-kicker">Welcome</span><strong>${message}</strong>`
   document.body.appendChild(banner)
 
   requestAnimationFrame(() => banner.classList.add("is-visible"))
@@ -577,4 +587,33 @@ function initWelcomeAnimation() {
   }, visibleFor)
 
   window.setTimeout(() => banner.remove(), visibleFor + 700)
+}
+
+function initDelightInteractions() {
+  document.addEventListener("pointerdown", (event) => {
+    if (!prefersReducedMotion) {
+      playTapSpark(event.clientX, event.clientY)
+      playPagePulse()
+    }
+
+    if (!hasPlayedTapWelcome) {
+      hasPlayedTapWelcome = true
+      showWelcomeBanner("Nice. Let's begin.")
+    }
+  }, { passive: true })
+}
+
+function playTapSpark(x, y) {
+  const spark = document.createElement("span")
+  spark.className = "tap-spark"
+  spark.style.left = `${x}px`
+  spark.style.top = `${y}px`
+  document.body.appendChild(spark)
+  window.setTimeout(() => spark.remove(), 520)
+}
+
+function playPagePulse() {
+  document.body.classList.add("page-pulse")
+  if (pulseTimeoutId) window.clearTimeout(pulseTimeoutId)
+  pulseTimeoutId = window.setTimeout(() => document.body.classList.remove("page-pulse"), 240)
 }
