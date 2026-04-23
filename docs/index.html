@@ -53,8 +53,9 @@
       </header>
 
       <section class="config-bar" id="questionnaire" aria-label="Assessment configuration">
-        <div class="config-group">
-          <span class="eyebrow small">I identify as</span>
+        <fieldset class="config-group-card" aria-label="Identity selection">
+          <legend class="eyebrow small">I identify as</legend>
+          <p class="config-note">Used for archetype naming style in your result card.</p>
           <div class="config-choices" role="radiogroup" aria-label="Gender">
             <label class="config-chip">
               <input type="radio" name="gender" value="male" checked />
@@ -69,9 +70,10 @@
               <span>Non-binary / Other</span>
             </label>
           </div>
-        </div>
-        <div class="config-group">
-          <span class="eyebrow small">Assessment depth</span>
+        </fieldset>
+        <fieldset class="config-group-card" aria-label="Assessment depth selection">
+          <legend class="eyebrow small">Assessment depth</legend>
+          <p class="config-note">Choose quick standard mode or deeper analysis mode.</p>
           <div class="config-choices" role="radiogroup" aria-label="Mode">
             <label class="config-chip">
               <input type="radio" name="mode" value="standard" checked />
@@ -82,7 +84,7 @@
               <span>Deep — 20 questions</span>
             </label>
           </div>
-        </div>
+        </fieldset>
       </section>
 
       <main class="layout" id="assessment" aria-label="Questions">
