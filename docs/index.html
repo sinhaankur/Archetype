@@ -53,9 +53,15 @@
       </header>
 
       <section class="config-bar" id="questionnaire" aria-label="Assessment configuration">
-        <fieldset class="config-group-card" aria-label="Identity selection">
-          <legend class="eyebrow small">I identify as</legend>
-          <p class="config-note">Used for archetype naming style in your result card.</p>
+        <div class="config-intro">
+          <p class="eyebrow small">Setup</p>
+          <h2>Tune your assessment</h2>
+          <p>Pick your naming style and depth before you start answering.</p>
+        </div>
+
+        <section class="config-group-card" role="group" aria-label="Identity selection">
+          <h3 class="config-title">I identify as</h3>
+          <p class="config-note">This only affects the naming style in your result card.</p>
           <div class="config-choices" role="radiogroup" aria-label="Gender">
             <label class="config-chip">
               <input type="radio" name="gender" value="male" checked />
@@ -70,10 +76,11 @@
               <span>Non-binary / Other</span>
             </label>
           </div>
-        </fieldset>
-        <fieldset class="config-group-card" aria-label="Assessment depth selection">
-          <legend class="eyebrow small">Assessment depth</legend>
-          <p class="config-note">Choose quick standard mode or deeper analysis mode.</p>
+        </section>
+
+        <section class="config-group-card" role="group" aria-label="Assessment depth selection">
+          <h3 class="config-title">Assessment depth</h3>
+          <p class="config-note">Standard is faster. Deep gives a more nuanced ranking.</p>
           <div class="config-choices" role="radiogroup" aria-label="Mode">
             <label class="config-chip">
               <input type="radio" name="mode" value="standard" checked />
@@ -84,7 +91,7 @@
               <span>Deep — 20 questions</span>
             </label>
           </div>
-        </fieldset>
+        </section>
       </section>
 
       <main class="layout" id="assessment" aria-label="Questions">
