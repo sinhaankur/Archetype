@@ -158,6 +158,9 @@ let isMobileDevice = false
 // Detect device type for loading flow
 isMobileDevice = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches
 
+// Initialize loading screen timing
+initLoadingScreen()
+
 requestAnimationFrame(() => document.body.classList.remove("js-loading"))
 initConfigControls()
 updateQuestionCountUI()
@@ -881,4 +884,46 @@ function showDeviceContextWelcome() {
     : "Ready to discover your archetype?"
 
   showWelcomeBanner(deviceMessage)
+}
+
+/**
+ * Manage loading screen with minimum display duration
+ * Ensures smooth transition from loading to content reveal
+ */
+function initLoadingScreen() {
+  const loadingScreen = document.getElementById("loading-screen")
+  if (!loadingScreen) return
+
+  // Set a minimum loading display time for visual delight (2000ms)
+  // Then fade it out smoothly as content loads
+  const loadingStartTime = performance.now()
+  const minimumLoadingDuration = 2000 // milliseconds
+
+  // Listen for when page is fully ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      scheduleLoadingScreenFadeOut(loadingStartTime, minimumLoadingDuration)
+    })
+  } else {
+    // Page already loaded
+    scheduleLoadingScreenFadeOut(loadingStartTime, minimumLoadingDuration)
+  }
+
+  // Also trigger fade out when window loads (fonts, images, etc.)
+  window.addEventListener("load", () => {
+    scheduleLoadingScreenFadeOut(loadingStartTime, minimumLoadingDuration)
+  })
+}
+
+/**
+ * Schedule loading screen fade out with minimum duration guarantee
+ */
+function scheduleLoadingScreenFadeOut(startTime, minDuration) {
+  const elapsed = performance.now() - startTime
+  const remainingTime = Math.max(0, minDuration - elapsed)
+
+  // Wait remaining time, then remove loading class to trigger fade animation
+  setTimeout(() => {
+    document.body.classList.remove("js-loading")
+  }, remainingTime + 100)
 }

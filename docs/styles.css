@@ -47,6 +47,77 @@ body.page-pulse {
 
 /* Loading mask: prevents flash of unstyled animation state */
 body.js-loading * { animation-play-state: paused !important; }
+body.js-loading .loading-screen * { animation-play-state: running !important; }
+
+/* ── Loading screen animations ────────────────────────────── */
+@keyframes skeletonShimmer {
+  0% {
+    background: linear-gradient(90deg, var(--card-muted) 0%, var(--card) 50%, var(--card-muted) 100%);
+    background-size: 200% 100%;
+    background-position: 200% 0;
+  }
+  100% {
+    background-size: 200% 100%;
+    background-position: -200% 0;
+  }
+}
+
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes loaderDotPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes loadingScreenFade {
+  0% {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  90% {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@keyframes skeletonBlockSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes loadingTextGlow {
+  0%, 100% {
+    color: var(--muted-foreground);
+    text-shadow: none;
+  }
+  50% {
+    color: var(--foreground);
+    text-shadow: 0 0 8px rgba(232, 24, 42, 0.2);
+  }
+}
 
 /* ── Page load phase animations ──────────────────────────── */
 @keyframes loadingPulse {
@@ -121,6 +192,128 @@ body.js-loading * { animation-play-state: paused !important; }
 
 a  { color: inherit; text-decoration: none; }
 button, input { font: inherit; }
+
+/* ── Loading screen overlay ──────────────────────────────── */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top left,  hsl(50 100% 55% / 0.22), transparent 28%),
+    radial-gradient(circle at bottom right, hsl(216 85% 45% / 0.18), transparent 30%),
+    linear-gradient(180deg, hsl(45 15% 97%), hsl(45 22% 94%));
+  animation: loadingScreenFade 1.2s var(--ease-out) 2000ms forwards;
+}
+
+.loading-container {
+  width: min(580px, calc(100% - 2rem));
+  display: grid;
+  gap: 2rem;
+  perspective: 1000px;
+}
+
+/* ── Skeleton hero section ────────────────────────────────── */
+.skeleton-hero {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 2px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  animation: skeletonBlockSlideIn 480ms var(--ease-out) both;
+}
+
+.skeleton-block {
+  height: 1rem;
+  border-radius: 2px;
+  background: var(--card-muted);
+  animation: skeletonShimmer 2s linear infinite;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 1.4rem;
+  animation-delay: 0ms;
+}
+
+.skeleton-subtitle {
+  width: 90%;
+  height: 0.75rem;
+  animation-delay: 60ms;
+}
+
+.skeleton-group {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  animation-delay: 120ms;
+}
+
+.skeleton-button {
+  flex: 1;
+  height: 2.2rem;
+  animation-delay: 180ms;
+}
+
+/* ── Skeleton stat cards ──────────────────────────────────── */
+.skeleton-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.8rem;
+  padding: 0 1rem;
+}
+
+.skeleton-card {
+  height: 100px;
+  border: 2px solid var(--border);
+  border-radius: 0;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  animation: skeletonPulse 1.6s ease-in-out infinite;
+  animation-delay: calc(var(--card-index, 0) * 100ms);
+}
+
+.skeleton-card:nth-child(1) { --card-index: 0; }
+.skeleton-card:nth-child(2) { --card-index: 1; }
+.skeleton-card:nth-child(3) { --card-index: 2; }
+
+/* ── Loading indicator with dots ──────────────────────────── */
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loader-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: loaderDotPulse 1.4s ease-in-out infinite;
+  box-shadow: var(--shadow-soft);
+}
+
+.loader-dot:nth-child(1) { animation-delay: 0ms; }
+.loader-dot:nth-child(2) { animation-delay: 200ms; }
+.loader-dot:nth-child(3) { animation-delay: 400ms; }
+
+.loading-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  animation: loadingTextGlow 2s ease-in-out infinite;
+}
+
+/* Hide loading screen when page is ready */
+body:not(.js-loading) .loading-screen {
+  display: none;
+}
 
 /* ── Layout shell ────────────────────────────────────────── */
 .page-shell {
@@ -1167,6 +1360,28 @@ button, input { font: inherit; }
 }
 
 @media (max-width: 720px) {
+  .loading-container {
+    width: min(90vw, 320px);
+  }
+
+  .skeleton-hero {
+    padding: 0.8rem;
+    gap: 0.6rem;
+  }
+
+  .skeleton-title {
+    height: 1.2rem;
+  }
+
+  .skeleton-stats {
+    gap: 0.6rem;
+    padding: 0;
+  }
+
+  .loading-text {
+    font-size: 0.75rem;
+  }
+
   .page-shell {
     width: min(100% - 0.75rem, 1080px);
     padding-bottom: calc(5.25rem + env(safe-area-inset-bottom));

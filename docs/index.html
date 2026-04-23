@@ -16,9 +16,39 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260423-ux19" />
+    <link rel="stylesheet" href="./styles.css?v=20260423-ux20" />
   </head>
   <body class="js-loading">
+    <!-- Loading screen overlay with skeleton loaders -->
+    <div class="loading-screen" id="loading-screen" aria-label="Page loading">
+      <div class="loading-container">
+        <!-- Loading header skeleton -->
+        <div class="skeleton-hero">
+          <div class="skeleton-block skeleton-title"></div>
+          <div class="skeleton-block skeleton-subtitle"></div>
+          <div class="skeleton-group">
+            <div class="skeleton-block skeleton-button"></div>
+            <div class="skeleton-block skeleton-button"></div>
+          </div>
+        </div>
+        
+        <!-- Loading stat cards skeleton -->
+        <div class="skeleton-stats">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+        
+        <!-- Animated loading indicator -->
+        <div class="loading-indicator">
+          <div class="loader-dot"></div>
+          <div class="loader-dot"></div>
+          <div class="loader-dot"></div>
+          <p class="loading-text">Discovering your archetype</p>
+        </div>
+      </div>
+    </div>
+
     <div class="gesture-hint" id="gesture-hint" aria-label="Interactive hint">
       <span class="gesture-hint-arrow">👇</span>
       <span class="gesture-hint-text">Scroll to explore</span>
