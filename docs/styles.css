@@ -72,10 +72,10 @@ button, input { font: inherit; }
 /* ── Framer-style motion primitives ─────────────────────── */
 .motion-item {
   opacity: 0;
-  transform: translateY(14px) scale(0.985);
+  transform: translateY(10px) scale(0.99);
   transition:
-    opacity 420ms var(--ease-out),
-    transform 520ms var(--ease-spring);
+    opacity 360ms var(--ease-out),
+    transform 440ms var(--ease-spring);
   transition-delay: var(--motion-delay, 0ms);
 }
 
@@ -87,10 +87,10 @@ button, input { font: inherit; }
 .hero.motion-item,
 .result-card.motion-item,
 .result-hero.motion-item {
-  transform: translateY(20px) scale(0.97);
+  transform: translateY(14px) scale(0.985);
   transition:
-    opacity 520ms var(--ease-out),
-    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 460ms var(--ease-out),
+    transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .hero.motion-item.motion-in,
@@ -100,10 +100,10 @@ button, input { font: inherit; }
 }
 
 .hero .stat-card.motion-item {
-  transform: translateX(14px) scale(0.97);
+  transform: translateX(10px) scale(0.985);
   transition:
-    opacity 380ms var(--ease-out),
-    transform 560ms var(--ease-spring);
+    opacity 320ms var(--ease-out),
+    transform 420ms var(--ease-spring);
 }
 
 .hero .stat-card.motion-item.motion-in {
@@ -111,7 +111,7 @@ button, input { font: inherit; }
 }
 
 .spring-press {
-  transform: translate(-1px, -1px) scale(0.96) !important;
+  transform: translate(-1px, -1px) scale(0.98) !important;
 }
 
 /* ── Hero ────────────────────────────────────────────────── */
@@ -501,7 +501,7 @@ button, input { font: inherit; }
 }
 
 .result-card.is-visible .result-hero {
-  animation: heroBreath 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: heroBreath 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .result-hero h2 {
@@ -806,8 +806,8 @@ button, input { font: inherit; }
 }
 
 @keyframes heroBreath {
-  0% { transform: scale(0.985); filter: saturate(0.94); }
-  55% { transform: scale(1.006); filter: saturate(1.04); }
+  0% { transform: scale(0.992); filter: saturate(0.97); }
+  55% { transform: scale(1.003); filter: saturate(1.02); }
   100% { transform: scale(1); filter: saturate(1); }
 }
 
