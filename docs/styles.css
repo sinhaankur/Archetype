@@ -278,6 +278,23 @@ button, input { font: inherit; }
   gap: 0.8rem;
 }
 
+.question-list.is-mobile-paged {
+  gap: 0.55rem;
+}
+
+.mobile-question-nav {
+  display: none;
+}
+
+.mobile-nav-status {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+}
+
 /* ── Question cards ──────────────────────────────────────── */
 .question-card {
   margin: 0;
@@ -1078,6 +1095,27 @@ button, input { font: inherit; }
 
   .button { width: 100%; }
 
+  .question-list.is-mobile-paged .question-card {
+    animation: slideDown 260ms var(--ease-out) both;
+  }
+
+  .mobile-question-nav {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem;
+    border: 2px solid var(--border);
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  .mobile-question-nav .button {
+    width: auto;
+    min-height: 36px;
+    padding: 0.4rem 0.55rem;
+  }
+
   .action-row {
     position: sticky;
     bottom: calc(0.5rem + env(safe-area-inset-bottom));
@@ -1168,6 +1206,16 @@ button, input { font: inherit; }
     min-height: 42px;
     padding: 0.48rem 0.55rem;
     font-size: 0.86rem;
+  }
+
+  .mobile-question-nav .button {
+    min-height: 34px;
+    padding: 0.35rem 0.45rem;
+    font-size: 0.78rem;
+  }
+
+  .mobile-nav-status {
+    font-size: 0.68rem;
   }
 
   .progress-count {

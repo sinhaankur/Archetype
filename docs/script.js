@@ -145,8 +145,10 @@ let rendering = false
 let recentlyAnsweredQuestionId = null
 let motionObserver = null
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+const MOBILE_BREAKPOINT = 720
 let hasPlayedTapWelcome = false
 let pulseTimeoutId = null
+let mobileQuestionIndex = 0
 
 requestAnimationFrame(() => document.body.classList.remove("js-loading"))
 initConfigControls()
@@ -156,12 +158,17 @@ updateProgress()
 initFramerUX()
 initWelcomeAnimation()
 initDelightInteractions()
+initMobilePagingSync()
 
 calculateButton.addEventListener("click", () => {
   const active = getActiveQuestions()
   const missing = active.find((question) => typeof answers[question.id] !== "number")
 
   if (missing) {
+    if (isMobilePagedView()) {
+      mobileQuestionIndex = Math.max(0, active.findIndex((question) => question.id === missing.id))
+      renderQuestions()
+    }
     const el = document.querySelector(`[data-question-id="${missing.id}"]`)
     el?.scrollIntoView({ behavior: "smooth", block: "center" })
     if (el) {
@@ -230,6 +237,7 @@ function initConfigControls() {
     radio.checked = radio.value === mode
     radio.addEventListener("change", () => {
       mode = radio.value
+      mobileQuestionIndex = 0
       persistState()
       updateQuestionCountUI()
       renderQuestions()
@@ -252,6 +260,7 @@ function hideResults() {
 
 function doReset() {
   answers = {}
+  mobileQuestionIndex = 0
   persistState()
   renderQuestions()
   updateProgress()
@@ -263,8 +272,21 @@ function renderQuestions() {
   rendering = true
   form.innerHTML = ""
   const activeQuestions = getActiveQuestions()
+  const mobilePagedView = isMobilePagedView()
 
-  activeQuestions.forEach((question, idx) => {
+  if (mobilePagedView) {
+    mobileQuestionIndex = clampMobileQuestionIndex(activeQuestions.length)
+    form.classList.add("is-mobile-paged")
+  } else {
+    form.classList.remove("is-mobile-paged")
+  }
+
+  const questionsToRender = mobilePagedView
+    ? [{ question: activeQuestions[mobileQuestionIndex], idx: mobileQuestionIndex }]
+    : activeQuestions.map((question, idx) => ({ question, idx }))
+
+  questionsToRender.forEach(({ question, idx }) => {
+    if (!question) return
     const fragment = questionTemplate.content.cloneNode(true)
     const fieldset = fragment.querySelector("fieldset")
     const traitPill = fragment.querySelector(".trait-pill")
@@ -297,17 +319,18 @@ function renderQuestions() {
         const nextQuestion = activeQuestions[idx + 1]
         recentlyAnsweredQuestionId = question.id
         answers[question.id] = rating
+
+        if (mobilePagedView && nextQuestion) {
+          mobileQuestionIndex = idx + 1
+        }
+
         persistState()
         renderQuestions()
         updateProgress()
         hideResults()
 
-        if (window.matchMedia("(max-width: 720px)").matches && nextQuestion) {
-          window.setTimeout(() => {
-            document
-              .querySelector(`[data-question-id="${nextQuestion.id}"]`)
-              ?.scrollIntoView({ behavior: "smooth", block: "center" })
-          }, 120)
+        if (mobilePagedView && nextQuestion) {
+          document.querySelector(".question-list")?.scrollIntoView({ behavior: "smooth", block: "start" })
         }
 
         if (window.matchMedia("(pointer: coarse)").matches && "vibrate" in navigator) {
@@ -328,9 +351,66 @@ function renderQuestions() {
     form.appendChild(fragment)
   })
 
+  if (mobilePagedView) {
+    form.appendChild(buildMobileQuestionNav(activeQuestions))
+  }
+
   rendering = false
   syncFramerMotion()
   animateRecentlyAnsweredQuestion()
+}
+
+function buildMobileQuestionNav(activeQuestions) {
+  const wrapper = document.createElement("div")
+  wrapper.className = "mobile-question-nav"
+
+  const prev = document.createElement("button")
+  prev.type = "button"
+  prev.className = "button"
+  prev.textContent = "Previous"
+  prev.disabled = mobileQuestionIndex <= 0
+  prev.addEventListener("click", () => {
+    mobileQuestionIndex = Math.max(0, mobileQuestionIndex - 1)
+    renderQuestions()
+  })
+
+  const status = document.createElement("p")
+  status.className = "mobile-nav-status"
+  status.textContent = `Question ${mobileQuestionIndex + 1} of ${activeQuestions.length}`
+
+  const next = document.createElement("button")
+  next.type = "button"
+  next.className = "button button-secondary"
+  next.textContent = mobileQuestionIndex >= activeQuestions.length - 1 ? "Review" : "Next"
+  next.disabled = mobileQuestionIndex >= activeQuestions.length - 1
+  next.addEventListener("click", () => {
+    mobileQuestionIndex = Math.min(activeQuestions.length - 1, mobileQuestionIndex + 1)
+    renderQuestions()
+  })
+
+  wrapper.append(prev, status, next)
+  return wrapper
+}
+
+function isMobilePagedView() {
+  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches
+}
+
+function clampMobileQuestionIndex(total) {
+  if (total <= 0) return 0
+  return Math.min(Math.max(0, mobileQuestionIndex), total - 1)
+}
+
+function initMobilePagingSync() {
+  const media = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`)
+  let wasMobile = media.matches
+
+  media.addEventListener("change", (event) => {
+    if (event.matches !== wasMobile) {
+      wasMobile = event.matches
+      renderQuestions()
+    }
+  })
 }
 
 function updateProgress() {
