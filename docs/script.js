@@ -591,8 +591,13 @@ function showWelcomeBanner(message) {
 
 function initDelightInteractions() {
   document.addEventListener("pointerdown", (event) => {
+    const target = event.target instanceof Element ? event.target : null
+    const interactive = target?.closest(".button, .config-chip, .rating-option, .rating-box")
+
+    if (!interactive) return
+
     if (!prefersReducedMotion) {
-      playTapSpark(event.clientX, event.clientY, event.target)
+      playTapSpark(event.clientX, event.clientY, interactive)
       playPagePulse()
     }
 
