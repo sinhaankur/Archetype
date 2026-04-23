@@ -604,12 +604,24 @@ function initDelightInteractions() {
 }
 
 function playTapSpark(x, y) {
-  const spark = document.createElement("span")
-  spark.className = "tap-spark"
-  spark.style.left = `${x}px`
-  spark.style.top = `${y}px`
-  document.body.appendChild(spark)
-  window.setTimeout(() => spark.remove(), 520)
+  const burst = document.createElement("span")
+  burst.className = "tap-burst"
+  burst.style.left = `${x}px`
+  burst.style.top = `${y}px`
+
+  const ring = document.createElement("span")
+  ring.className = "tap-ring"
+  burst.appendChild(ring)
+
+  for (let i = 0; i < 6; i += 1) {
+    const dot = document.createElement("span")
+    dot.className = "tap-dot"
+    dot.style.setProperty("--a", `${i * 60}deg`)
+    burst.appendChild(dot)
+  }
+
+  document.body.appendChild(burst)
+  window.setTimeout(() => burst.remove(), 560)
 }
 
 function playPagePulse() {
