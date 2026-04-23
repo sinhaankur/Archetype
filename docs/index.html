@@ -16,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260423-ux11" />
+    <link rel="stylesheet" href="./styles.css?v=20260423-ux12" />
   </head>
   <body class="js-loading">
     <div class="page-shell">
@@ -80,7 +80,7 @@
 
         <section class="config-group-card" role="group" aria-label="Assessment depth selection">
           <h3 class="config-title">Assessment depth</h3>
-          <p class="config-note">Standard is faster. Deep gives a more nuanced ranking.</p>
+          <p class="config-note">Standard is fast, Deep is richer, and Deep Dive gives maximum depth.</p>
           <div class="config-choices" role="radiogroup" aria-label="Mode">
             <label class="config-chip">
               <input type="radio" name="mode" value="standard" checked />
@@ -89,6 +89,10 @@
             <label class="config-chip">
               <input type="radio" name="mode" value="deep" />
               <span>Deep — 20 questions</span>
+            </label>
+            <label class="config-chip">
+              <input type="radio" name="mode" value="deepdive" />
+              <span>Deep Dive — 30 questions</span>
             </label>
           </div>
         </section>
@@ -209,6 +213,6 @@
       </label>
     </template>
 
-    <script src="./script.js?v=20260423-ux11"></script>
+    <script src="./script.js?v=20260423-ux12"></script>
   </body>
 </html>

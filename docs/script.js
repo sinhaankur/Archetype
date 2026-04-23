@@ -24,6 +24,19 @@ const DEEP_QUESTIONS = [
   { id: 20, trait: "Cre", text: "I regularly produce original ideas for expression, products, or workflows." },
 ]
 
+const DEEP_DIVE_QUESTIONS = [
+  { id: 21, trait: "Ind", text: "Even when outcomes are uncertain, I still choose the path that preserves my autonomy." },
+  { id: 22, trait: "Emp", text: "I can hold space for others without losing my own emotional center." },
+  { id: 23, trait: "Wis", text: "I frequently revisit past decisions to extract principles I can apply to future situations." },
+  { id: 24, trait: "Skl", text: "I create repeatable systems so my performance stays high even under pressure." },
+  { id: 25, trait: "Cre", text: "I am willing to challenge successful formulas when I sense a better original approach." },
+  { id: 26, trait: "Ind", text: "I can tolerate disapproval if it means remaining aligned with my deepest values." },
+  { id: 27, trait: "Emp", text: "I actively adapt my communication style to meet people where they are emotionally." },
+  { id: 28, trait: "Wis", text: "I naturally think in second-order effects before taking important action." },
+  { id: 29, trait: "Skl", text: "I improve by measuring weak points deliberately rather than relying on motivation alone." },
+  { id: 30, trait: "Cre", text: "I can turn abstract ideas into tangible outputs that others can actually use." },
+]
+
 const ARCHETYPES = {
   "The King":      { Ind: 0.39, Wis: 0.35, Emp: 0.14, Skl: 0.03, Cre: 0.09 },
   "The Father":    { Wis: 0.50, Emp: 0.30, Ind: 0.10, Skl: 0.05, Cre: 0.05 },
@@ -198,7 +211,9 @@ shareWaButton.addEventListener("click", () => {
 })
 
 function getActiveQuestions() {
-  return mode === "deep" ? STANDARD_QUESTIONS.concat(DEEP_QUESTIONS) : STANDARD_QUESTIONS
+  if (mode === "deep") return STANDARD_QUESTIONS.concat(DEEP_QUESTIONS)
+  if (mode === "deepdive") return STANDARD_QUESTIONS.concat(DEEP_QUESTIONS, DEEP_DIVE_QUESTIONS)
+  return STANDARD_QUESTIONS
 }
 
 function initConfigControls() {
