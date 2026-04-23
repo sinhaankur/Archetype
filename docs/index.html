@@ -8,6 +8,8 @@
       name="description"
       content="A retro-styled archetype questionnaire that maps your answers to a weighted five-trait profile."
     />
+    <meta property="og:title" content="Archetype Discovery" />
+    <meta property="og:description" content="Find the pattern that actually drives you. 12 archetypes, 5 traits, 10–20 questions." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -34,7 +36,7 @@
         <div class="hero-panel">
           <div class="stat-card">
             <span class="stat-label">Questions</span>
-            <strong>10</strong>
+            <strong id="hero-q-count">10</strong>
             <span class="stat-subtext">quick statements</span>
           </div>
           <div class="stat-card accent-yellow">
@@ -50,11 +52,44 @@
         </div>
       </header>
 
-      <main class="layout" id="questionnaire">
+      <section class="config-bar" id="questionnaire" aria-label="Assessment configuration">
+        <div class="config-group">
+          <span class="eyebrow small">I identify as</span>
+          <div class="config-choices" role="radiogroup" aria-label="Gender">
+            <label class="config-chip">
+              <input type="radio" name="gender" value="male" checked />
+              <span>Man</span>
+            </label>
+            <label class="config-chip">
+              <input type="radio" name="gender" value="female" />
+              <span>Woman</span>
+            </label>
+            <label class="config-chip">
+              <input type="radio" name="gender" value="neutral" />
+              <span>Non-binary / Other</span>
+            </label>
+          </div>
+        </div>
+        <div class="config-group">
+          <span class="eyebrow small">Assessment depth</span>
+          <div class="config-choices" role="radiogroup" aria-label="Mode">
+            <label class="config-chip">
+              <input type="radio" name="mode" value="standard" checked />
+              <span>Standard — 10 questions</span>
+            </label>
+            <label class="config-chip">
+              <input type="radio" name="mode" value="deep" />
+              <span>Deep — 20 questions</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <main class="layout" id="assessment">
         <aside class="sidebar-card">
           <div class="sidebar-section">
             <span class="eyebrow small">Progress</span>
-            <div class="progress-count"><span id="answered-count">0</span>/10</div>
+            <div class="progress-count"><span id="answered-count">0</span>/<span id="total-count">10</span></div>
             <div class="progress-bar" aria-hidden="true">
               <div class="progress-fill" id="progress-fill"></div>
             </div>
