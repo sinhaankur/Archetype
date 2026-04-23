@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Archetype Discovery Test</title>
+    <meta
+      name="description"
+      content="A retro-styled archetype questionnaire that maps your answers to a weighted five-trait profile."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Archetype Assessment</p>
+          <h1>Find the pattern that actually drives you.</h1>
+          <p class="hero-text">
+            This assessment uses a weighted five-trait model to rank 12 archetypes based on how you think,
+            decide, build, and relate.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#questionnaire">Start the test</a>
+            <a class="button button-secondary" href="#method">See how it works</a>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="stat-card">
+            <span class="stat-label">Questions</span>
+            <strong>10</strong>
+            <span class="stat-subtext">quick statements</span>
+          </div>
+          <div class="stat-card accent-yellow">
+            <span class="stat-label">Traits</span>
+            <strong>5</strong>
+            <span class="stat-subtext">weighted dimensions</span>
+          </div>
+          <div class="stat-card accent-blue">
+            <span class="stat-label">Output</span>
+            <strong>12</strong>
+            <span class="stat-subtext">ranked archetypes</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="layout" id="questionnaire">
+        <aside class="sidebar-card">
+          <div class="sidebar-section">
+            <span class="eyebrow small">Progress</span>
+            <div class="progress-count"><span id="answered-count">0</span>/10</div>
+            <div class="progress-bar" aria-hidden="true">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <p class="sidebar-copy" id="progress-copy">Answer the statements below to unlock your result.</p>
+          </div>
+
+          <div class="sidebar-section">
+            <span class="eyebrow small">Scale</span>
+            <ul class="scale-list">
+              <li><span>1</span> Strongly Disagree</li>
+              <li><span>2</span> Disagree</li>
+              <li><span>3</span> Neutral</li>
+              <li><span>4</span> Agree</li>
+              <li><span>5</span> Strongly Agree</li>
+            </ul>
+          </div>
+
+          <div class="sidebar-section" id="method">
+            <span class="eyebrow small">Method</span>
+            <p class="sidebar-copy">
+              Independence, Empathy, Wisdom, Skills, and Creativity are averaged from your answers, then scored
+              against weighted archetype signatures.
+            </p>
+          </div>
+        </aside>
+
+        <section class="content-column">
+          <form id="archetype-form" class="question-list"></form>
+
+          <section class="action-row">
+            <button class="button button-primary" id="calculate-button" type="button">Calculate my archetype</button>
+            <button class="button button-secondary" id="reset-button" type="button">Reset answers</button>
+          </section>
+
+          <section class="result-card is-hidden" id="result-card" aria-live="polite">
+            <div class="result-hero">
+              <div>
+                <p class="eyebrow small">Primary match</p>
+                <h2 id="top-name">The Archetype</h2>
+                <p class="result-description" id="top-description"></p>
+              </div>
+              <div class="result-score-box">
+                <span class="stat-label">Match strength</span>
+                <strong id="top-score">0.00</strong>
+              </div>
+            </div>
+
+            <div class="result-grid">
+              <section class="panel">
+                <h3>Trait breakdown</h3>
+                <div id="trait-breakdown" class="trait-stack"></div>
+              </section>
+
+              <section class="panel">
+                <h3>Top 5 matches</h3>
+                <div id="ranking-list" class="ranking-list"></div>
+              </section>
+            </div>
+
+            <section class="panel summary-panel">
+              <div>
+                <h3>Reading</h3>
+                <p id="summary-text"></p>
+              </div>
+              <button class="button button-secondary" id="copy-summary-button" type="button">Copy result summary</button>
+            </section>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <template id="question-template">
+      <fieldset class="question-card">
+        <div class="question-header">
+          <span class="trait-pill"></span>
+          <span class="question-status">Not answered</span>
+        </div>
+        <legend class="question-text"></legend>
+        <div class="rating-grid"></div>
+      </fieldset>
+    </template>
+
+    <template id="rating-template">
+      <label class="rating-option">
+        <input type="radio" />
+        <span class="rating-box">
+          <strong class="rating-value"></strong>
+          <small class="rating-label"></small>
+        </span>
+      </label>
+    </template>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
