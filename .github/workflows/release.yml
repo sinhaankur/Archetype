@@ -1,0 +1,52 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build standalone package
+        run: |
+          mkdir -p dist/archetype
+          cp docs/index.html  dist/archetype/
+          cp docs/styles.css  dist/archetype/
+          cp docs/script.js   dist/archetype/
+          cp docs/.nojekyll   dist/archetype/ 2>/dev/null || true
+          cp README.md        dist/archetype/
+          cd dist
+          zip -r archetype-${{ github.ref_name }}.zip archetype/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Archetype ${{ github.ref_name }}"
+          body: |
+            ## Archetype ${{ github.ref_name }}
+
+            A weighted five-trait personality assessment engine mapping answers to 12 archetypes.
+
+            ### What's in the package
+            - `index.html` — standalone questionnaire (no build step, open in any browser)
+            - `styles.css` — retro design system
+            - `script.js` — scoring engine (normalized weights, gender-aware names, deep mode)
+
+            ### How to use
+            1. Download `archetype-${{ github.ref_name }}.zip`
+            2. Unzip and open `index.html` in any browser
+            3. No internet connection required after loading fonts
+
+            ### Live site
+            https://sinhaankur.github.io/Archetype/
+          files: dist/archetype-${{ github.ref_name }}.zip
+          draft: false
+          prerelease: false

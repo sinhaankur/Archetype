@@ -411,6 +411,62 @@ input {
   font-size: 1.05rem;
 }
 
+/* ── Config bar (gender + mode selectors) ─────────────────── */
+.config-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+  margin-top: 1.5rem;
+  border: 2px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.config-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.config-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.config-chip {
+  cursor: pointer;
+}
+
+.config-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.config-chip span {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+  border: 2px solid var(--border);
+  background: var(--background);
+  box-shadow: var(--shadow);
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: background 100ms ease, transform 100ms ease;
+}
+
+.config-chip input:checked + span {
+  background: var(--foreground);
+  color: var(--card);
+}
+
+.config-chip span:hover {
+  transform: translate(-1px, -1px);
+}
+/* ─────────────────────────────────────────────────────────── */
+
 .trait-stack,
 .ranking-list {
   display: grid;
