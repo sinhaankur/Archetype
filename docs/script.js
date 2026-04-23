@@ -114,7 +114,10 @@ const questionTemplate = document.querySelector("#question-template")
 const ratingTemplate = document.querySelector("#rating-template")
 const calculateButton = document.querySelector("#calculate-button")
 const resetButton = document.querySelector("#reset-button")
-const copySummaryButton = document.querySelector("#copy-summary-button")
+const copySummaryButton  = document.querySelector("#copy-summary-button")
+const shareXButton       = document.querySelector("#share-x-button")
+const shareLinkedinButton= document.querySelector("#share-linkedin-button")
+const shareWaButton      = document.querySelector("#share-wa-button")
 const resultCard = document.querySelector("#result-card")
 const answeredCount = document.querySelector("#answered-count")
 const progressFill = document.querySelector("#progress-fill")
@@ -163,14 +166,37 @@ copySummaryButton.addEventListener("click", async () => {
     await navigator.clipboard.writeText(text)
     copySummaryButton.textContent = "Copied"
     window.setTimeout(() => {
-      copySummaryButton.textContent = "Copy result summary"
+      copySummaryButton.textContent = "Copy text"
     }, 1400)
   } catch {
     copySummaryButton.textContent = "Copy failed"
     window.setTimeout(() => {
-      copySummaryButton.textContent = "Copy result summary"
+      copySummaryButton.textContent = "Copy text"
     }, 1400)
   }
+})
+
+function buildShareText() {
+  const name  = topName.textContent || "an archetype"
+  const score = topScore.textContent || ""
+  const site  = "https://sinhaankur.github.io/Archetype/"
+  return `I just took the Archetype Assessment and my primary match is ${name} (score: ${score}). Find yours → ${site}`
+}
+
+shareXButton.addEventListener("click", () => {
+  const url = "https://x.com/intent/tweet?text=" + encodeURIComponent(buildShareText())
+  window.open(url, "_blank", "noopener,noreferrer")
+})
+
+shareLinkedinButton.addEventListener("click", () => {
+  const site = "https://sinhaankur.github.io/Archetype/"
+  const url  = "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(site)
+  window.open(url, "_blank", "noopener,noreferrer")
+})
+
+shareWaButton.addEventListener("click", () => {
+  const url = "https://wa.me/?text=" + encodeURIComponent(buildShareText())
+  window.open(url, "_blank", "noopener,noreferrer")
 })
 
 let _rendering = false

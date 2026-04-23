@@ -511,11 +511,29 @@ input {
 
 .summary-panel {
   margin-top: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
+  display: grid;
   gap: 1rem;
 }
+
+.share-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.button-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.88rem;
+  min-height: 40px;
+}
+
+.share-x        { background: hsl(0 0% 5%);    color: white; }
+.share-linkedin { background: hsl(210 100% 35%); color: white; }
+.share-wa       { background: hsl(142 70% 35%);  color: white; }
+
 
 @media (max-width: 980px) {
   .hero,
