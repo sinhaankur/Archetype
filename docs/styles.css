@@ -48,9 +48,9 @@ button, input { font: inherit; }
 
 /* ── Layout shell ────────────────────────────────────────── */
 .page-shell {
-  width: min(1080px, calc(100% - 1.2rem));
+  width: min(980px, calc(100% - 1rem));
   margin: 0 auto;
-  padding: 0.6rem 0 2.2rem;
+  padding: 0.5rem 0 1.8rem;
 }
 
 /* ── Shared box styling ──────────────────────────────────── */
@@ -73,23 +73,23 @@ button, input { font: inherit; }
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
-  gap: 0.9rem;
-  padding: 0.95rem;
+  gap: 0.6rem;
+  padding: 0.65rem;
   background: linear-gradient(135deg, hsl(0 0% 100%), hsl(45 10% 90%));
   animation: slideDown var(--duration-slow) var(--ease-out) both;
 }
 
 .hero-copy h1 {
-  margin: 0.3rem 0 0.75rem;
-  font-size: clamp(1.9rem, 4.2vw, 3.2rem);
+  margin: 0.25rem 0 0.45rem;
+  font-size: clamp(1.25rem, 2.5vw, 2.1rem);
   line-height: 0.95;
-  max-width: 10ch;
+  max-width: 9ch;
 }
 
 .hero-text {
   max-width: 58ch;
-  font-size: 0.92rem;
-  line-height: 1.6;
+  font-size: 0.78rem;
+  line-height: 1.45;
   color: var(--muted-foreground);
 }
 
@@ -112,27 +112,27 @@ button, input { font: inherit; }
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
 }
 
 .hero-panel {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.5rem;
   align-content: start;
 }
 
 /* ── Stat cards ──────────────────────────────────────────── */
-.stat-card { padding: 1rem; background: var(--card); }
+.stat-card { padding: 0.6rem; background: var(--card); }
 .accent-yellow { background: hsl(50 100% 55% / 0.55); }
 .accent-blue   { background: hsl(216 85% 45% / 0.12); }
 
 .stat-label {
   display: block;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.28rem;
   color: var(--muted-foreground);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
 }
 
@@ -140,8 +140,12 @@ button, input { font: inherit; }
 .result-score-box strong,
 .progress-count {
   display: block;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   line-height: 1;
+}
+
+.stat-subtext {
+  font-size: 0.72rem;
 }
 
 .stat-subtext,
@@ -362,8 +366,8 @@ button, input { font: inherit; }
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  min-height: 38px;
-  padding: 0.55rem 0.8rem;
+  min-height: 32px;
+  padding: 0.42rem 0.62rem;
   font-weight: 800;
   background: var(--card);
   color: var(--foreground);
@@ -767,6 +771,12 @@ button, input { font: inherit; }
 }
 
 /* ── Responsive ──────────────────────────────────────────── */
+@media (min-width: 1200px) {
+  .page-shell {
+    width: min(60vw, 900px);
+  }
+}
+
 @media (max-width: 980px) {
   .config-bar,
   .hero,
