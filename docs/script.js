@@ -139,6 +139,7 @@ updateQuestionCountUI()
 renderQuestions()
 updateProgress()
 initFramerUX()
+initWelcomeAnimation()
 
 calculateButton.addEventListener("click", () => {
   const active = getActiveQuestions()
@@ -558,4 +559,22 @@ function animateRecentlyAnsweredQuestion() {
     ],
     { duration: 420, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }
   )
+}
+
+function initWelcomeAnimation() {
+  const banner = document.createElement("div")
+  banner.className = "welcome-banner"
+  banner.setAttribute("aria-live", "polite")
+  banner.innerHTML = '<span class="welcome-kicker">Welcome</span><strong>Ready to discover your archetype?</strong>'
+  document.body.appendChild(banner)
+
+  requestAnimationFrame(() => banner.classList.add("is-visible"))
+
+  const visibleFor = prefersReducedMotion ? 1000 : 1700
+  window.setTimeout(() => {
+    banner.classList.remove("is-visible")
+    banner.classList.add("is-exit")
+  }, visibleFor)
+
+  window.setTimeout(() => banner.remove(), visibleFor + 700)
 }
