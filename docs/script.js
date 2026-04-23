@@ -508,13 +508,18 @@ function syncFramerMotion() {
   if (prefersReducedMotion) return
 
   const motionTargets = document.querySelectorAll(
-    ".hero, .config-bar, .sidebar-card, .question-card, .result-card, .panel, .summary-panel, .trait-row, .ranking-row"
+    ".hero, .hero .stat-card, .config-bar, .sidebar-card, .question-card, .result-card, .result-hero, .panel, .summary-panel, .trait-row, .ranking-row"
   )
 
   motionTargets.forEach((el, idx) => {
     if (!el.classList.contains("motion-item")) {
       el.classList.add("motion-item")
-      el.style.setProperty("--motion-delay", `${Math.min(idx * 32, 240)}ms`)
+      let delay = Math.min(idx * 26, 220)
+      if (el.classList.contains("hero")) delay = 20
+      if (el.classList.contains("stat-card")) delay = 80 + idx * 28
+      if (el.classList.contains("result-card")) delay = 40
+      if (el.classList.contains("result-hero")) delay = 80
+      el.style.setProperty("--motion-delay", `${delay}ms`)
     }
 
     if (motionObserver) {
