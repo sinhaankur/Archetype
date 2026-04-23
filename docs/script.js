@@ -121,6 +121,7 @@ const topScore = document.querySelector("#top-score")
 const traitBreakdown = document.querySelector("#trait-breakdown")
 const rankingList = document.querySelector("#ranking-list")
 const summaryText = document.querySelector("#summary-text")
+const seeHowItWorksButton = document.querySelector('a[href="#method"]')
 
 const floatPill = document.createElement("div")
 floatPill.className = "floating-progress"
@@ -159,6 +160,7 @@ initFramerUX()
 initWelcomeAnimation()
 initDelightInteractions()
 initMobilePagingSync()
+initMethodLinkBehavior()
 
 calculateButton.addEventListener("click", () => {
   const active = getActiveQuestions()
@@ -410,6 +412,21 @@ function initMobilePagingSync() {
       wasMobile = event.matches
       renderQuestions()
     }
+  })
+}
+
+function initMethodLinkBehavior() {
+  if (!seeHowItWorksButton) return
+
+  seeHowItWorksButton.addEventListener("click", (event) => {
+    const mobileTarget = document.querySelector("#method-mobile")
+    const desktopTarget = document.querySelector("#method")
+    const target = isMobilePagedView() ? mobileTarget : desktopTarget
+
+    if (!target) return
+
+    event.preventDefault()
+    target.scrollIntoView({ behavior: "smooth", block: "start" })
   })
 }
 
