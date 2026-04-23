@@ -47,23 +47,25 @@ const QUESTIONS = [
   {
     id: 10,
     trait: "Cre",
-    text: "I enjoy breaking conventions and finding humor or novelty in mundane situations.",
+    text: "I often imagine entirely new ways something could look, work, or be expressed.",
   },
 ]
 
+// All weight rows are normalized to sum exactly to 1.00 so every archetype
+// competes on the same scale. Previously The Rebel summed to 1.24 and always won.
 const ARCHETYPES = {
-  "The King": { Ind: 0.42, Wis: 0.37, Emp: 0.15, Skl: 0.03, Cre: 0.1 },
-  "The Father": { Wis: 0.5, Emp: 0.3, Ind: 0.1, Skl: 0.05, Cre: 0.05 },
-  "The Warrior": { Ind: 0.24, Cre: 0.2, Wis: 0.18, Skl: 0.15, Emp: 0.02 },
-  "The Magician": { Emp: 0.49, Cre: 0.19, Skl: 0.15, Ind: 0.08, Wis: 0.04 },
-  "The Lover": { Ind: 0.38, Wis: 0.32, Emp: 0.12, Skl: 0.17, Cre: 0.01 },
-  "The Sage": { Wis: 0.5, Cre: 0.21, Emp: 0.2, Ind: 0.12, Skl: 0.1 },
-  "The Explorer": { Ind: 0.54, Cre: 0.11, Skl: 0.11, Wis: 0.1, Emp: 0.06 },
-  "The Creator": { Cre: 0.4, Wis: 0.15, Ind: 0.11, Skl: 0.1, Emp: 0.03 },
-  "The Hero": { Wis: 0.39, Ind: 0.33, Emp: 0.12, Skl: 0.05, Cre: 0.02 },
-  "The Rebel": { Ind: 0.59, Cre: 0.22, Emp: 0.23, Wis: 0.12, Skl: 0.08 },
-  "The Jester": { Cre: 0.63, Skl: 0.13, Ind: 0.11, Wis: 0.1, Emp: 0.08 },
-  "The Caregiver": { Emp: 0.45, Skl: 0.2, Wis: 0.15, Ind: 0.1, Cre: 0.04 },
+  "The King":      { Ind: 0.39, Wis: 0.35, Emp: 0.14, Skl: 0.03, Cre: 0.09 }, // sum=1.00
+  "The Father":    { Wis: 0.50, Emp: 0.30, Ind: 0.10, Skl: 0.05, Cre: 0.05 }, // sum=1.00
+  "The Warrior":   { Ind: 0.30, Skl: 0.25, Wis: 0.23, Cre: 0.19, Emp: 0.03 }, // sum=1.00
+  "The Magician":  { Emp: 0.52, Cre: 0.20, Skl: 0.16, Ind: 0.08, Wis: 0.04 }, // sum=1.00
+  "The Lover":     { Emp: 0.42, Wis: 0.32, Ind: 0.12, Skl: 0.10, Cre: 0.04 }, // sum=1.00
+  "The Sage":      { Wis: 0.44, Cre: 0.19, Emp: 0.18, Ind: 0.11, Skl: 0.08 }, // sum=1.00
+  "The Explorer":  { Ind: 0.59, Cre: 0.12, Skl: 0.12, Wis: 0.11, Emp: 0.06 }, // sum=1.00
+  "The Creator":   { Cre: 0.51, Wis: 0.19, Ind: 0.14, Skl: 0.13, Emp: 0.03 }, // sum=1.00
+  "The Hero":      { Wis: 0.43, Ind: 0.36, Emp: 0.13, Skl: 0.06, Cre: 0.02 }, // sum=1.00
+  "The Rebel":     { Ind: 0.52, Cre: 0.22, Emp: 0.12, Wis: 0.10, Skl: 0.04 }, // sum=1.00
+  "The Jester":    { Cre: 0.60, Skl: 0.12, Ind: 0.11, Wis: 0.10, Emp: 0.07 }, // sum=1.00
+  "The Caregiver": { Emp: 0.48, Skl: 0.21, Wis: 0.16, Ind: 0.11, Cre: 0.04 }, // sum=1.00
 }
 
 const TRAIT_LABELS = {
@@ -105,7 +107,7 @@ const ARCHETYPE_DESCRIPTIONS = {
   "The Caregiver": "Compassionate, dependable, and most fulfilled when supporting and protecting others.",
 }
 
-const STORAGE_KEY = "archetype-pages-answers"
+const STORAGE_KEY = "archetype-pages-v2" // bumped from v1 to bust stale cached answers
 
 const form = document.querySelector("#archetype-form")
 const questionTemplate = document.querySelector("#question-template")
@@ -144,7 +146,7 @@ calculateButton.addEventListener("click", () => {
 
 resetButton.addEventListener("click", () => {
   answers = {}
-  persistAnswers()
+  persistState()
   renderQuestions()
   updateProgress()
   resultCard.classList.add("is-hidden")
@@ -171,7 +173,11 @@ copySummaryButton.addEventListener("click", async () => {
   }
 })
 
+let _rendering = false
+
 function renderQuestions() {
+  if (_rendering) return
+  _rendering = true
   form.innerHTML = ""
 
   for (const question of QUESTIONS) {
@@ -202,7 +208,7 @@ function renderQuestions() {
       input.checked = selectedValue === rating
       input.addEventListener("change", () => {
         answers[question.id] = rating
-        persistAnswers()
+        persistState()
         renderQuestions()
         updateProgress()
         resultCard.classList.add("is-hidden")
@@ -216,6 +222,7 @@ function renderQuestions() {
 
     form.appendChild(fragment)
   }
+  _rendering = false
 }
 
 function updateProgress() {
@@ -341,6 +348,6 @@ function loadAnswers() {
   }
 }
 
-function persistAnswers() {
+function persistState() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(answers))
 }
