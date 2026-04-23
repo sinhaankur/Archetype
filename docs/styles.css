@@ -48,6 +48,77 @@ body.page-pulse {
 /* Loading mask: prevents flash of unstyled animation state */
 body.js-loading * { animation-play-state: paused !important; }
 
+/* ── Page load phase animations ──────────────────────────── */
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes heroGlowIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes heroCtaCursor {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.02); }
+}
+
+@keyframes statCardStaggerIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-12px) rotateZ(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotateZ(0);
+  }
+}
+
+@keyframes gesturePulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
+}
+
+@keyframes gestureArrowFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(0deg); }
+}
+
+@keyframes configFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroAccentGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+  }
+}
+
 a  { color: inherit; text-decoration: none; }
 button, input { font: inherit; }
 
@@ -126,7 +197,18 @@ button, input { font: inherit; }
   gap: 0.6rem;
   padding: 0.65rem;
   background: linear-gradient(135deg, hsl(0 0% 100%), hsl(45 10% 90%));
-  animation: slideDown var(--duration-slow) var(--ease-out) both;
+  animation: heroGlowIn 560ms var(--ease-out) 80ms both;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: none;
+  pointer-events: none;
 }
 
 .hero-copy h1 {
@@ -166,6 +248,18 @@ button, input { font: inherit; }
   margin-top: 0.75rem;
 }
 
+.hero-actions .button-primary {
+  position: relative;
+  animation: heroCtaCursor 1.2s ease-in-out 800ms infinite;
+}
+
+.hero-actions .button-primary::after {
+  content: "→";
+  display: inline-block;
+  margin-left: 0.25rem;
+  animation: gestureArrowFloat 1.2s ease-in-out 800ms infinite;
+}
+
 .hero-panel {
   display: grid;
   gap: 0.5rem;
@@ -173,7 +267,16 @@ button, input { font: inherit; }
 }
 
 /* ── Stat cards ──────────────────────────────────────────── */
-.stat-card { padding: 0.6rem; background: var(--card); }
+.stat-card {
+  padding: 0.6rem;
+  background: var(--card);
+  animation: statCardStaggerIn 480ms var(--ease-out) both;
+}
+
+.stat-card:nth-child(1) { animation-delay: 140ms; }
+.stat-card:nth-child(2) { animation-delay: 200ms; }
+.stat-card:nth-child(3) { animation-delay: 260ms; }
+
 .accent-yellow { background: hsl(50 100% 55% / 0.55); }
 .accent-blue   { background: hsl(216 85% 45% / 0.12); }
 
@@ -595,7 +698,7 @@ button, input { font: inherit; }
   border: 2px solid var(--border);
   background: var(--card);
   box-shadow: var(--shadow);
-  animation: slideDown var(--duration-slow) var(--ease-out) 80ms both;
+  animation: configFadeIn 560ms var(--ease-out) 320ms both;
 }
 
 .config-intro {
@@ -826,6 +929,37 @@ button, input { font: inherit; }
 .welcome-banner strong {
   font-size: 0.8rem;
   line-height: 1;
+}
+
+/* ── Mobile gesture hints ────────────────────────────────── */
+.gesture-hint {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  animation: gesturePulse 2s ease-in-out infinite;
+}
+
+.gesture-hint.is-visible-mobile {
+  display: flex;
+}
+
+.gesture-hint-arrow {
+  font-size: 1.2rem;
+  animation: gestureArrowFloat 2s ease-in-out infinite;
+}
+
+.gesture-hint-text {
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  text-align: center;
+  max-width: 60px;
 }
 
 .tap-burst {
@@ -1175,6 +1309,18 @@ button, input { font: inherit; }
 
   .welcome-banner strong {
     font-size: 0.72rem;
+  }
+
+  .gesture-hint.is-visible-mobile {
+    display: flex;
+  }
+
+  .hero-actions .button-primary::after {
+    display: none;
+  }
+
+  .hero-actions .button-primary {
+    animation: none;
   }
 }
 

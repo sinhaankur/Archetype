@@ -152,6 +152,11 @@ let pulseTimeoutId = null
 let mobileQuestionIndex = 0
 const ANALYTICS_NAMESPACE = "archetype-gh-pages-sinhaankur"
 const UNIQUE_USER_KEY = "archetype-unique-user-v1"
+let hasShownGestureHint = false
+let isMobileDevice = false
+
+// Detect device type for loading flow
+isMobileDevice = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches
 
 requestAnimationFrame(() => document.body.classList.remove("js-loading"))
 initConfigControls()
@@ -163,7 +168,9 @@ initWelcomeAnimation()
 initDelightInteractions()
 initMobilePagingSync()
 initMethodLinkBehavior()
+initGestureHints()
 trackUsageMetrics()
+initPageLoadFlow()
 
 calculateButton.addEventListener("click", () => {
   const active = getActiveQuestions()
@@ -799,4 +806,79 @@ function trackUsageMetrics() {
 function hitCounter(metric) {
   const url = `https://api.countapi.xyz/hit/${ANALYTICS_NAMESPACE}/${metric}`
   return fetch(url, { method: "GET", mode: "cors", cache: "no-store" })
+}
+
+/**
+ * Initialize gesture hints for mobile users
+ * Shows a subtle "scroll to explore" hint on page load for mobile
+ */
+function initGestureHints() {
+  const gestureHint = document.getElementById("gesture-hint")
+  if (!gestureHint) return
+
+  // Only show on mobile devices
+  if (!isMobileDevice) return
+
+  // Show hint after welcome animation settles
+  RequestIdleCallback?.(() => {
+    setTimeout(() => {
+      if (!hasShownGestureHint && isMobileDevice) {
+        gestureHint.classList.add("is-visible-mobile")
+        hasShownGestureHint = true
+      }
+    }, 2200)
+  }) || setTimeout(() => {
+    if (!hasShownGestureHint && isMobileDevice) {
+      gestureHint.classList.add("is-visible-mobile")
+      hasShownGestureHint = true
+    }
+  }, 2200)
+
+  // Hide hint when user scrolls
+  const hideHintOnScroll = () => {
+    gestureHint.classList.remove("is-visible-mobile")
+    window.removeEventListener("scroll", hideHintOnScroll)
+  }
+
+  window.addEventListener("scroll", hideHintOnScroll, { once: true })
+}
+
+/**
+ * Initialize page load flow with device-specific welcome messages
+ * Creates an intuitive progression: loading → hero → welcome → config
+ */
+function initPageLoadFlow() {
+  const configBar = document.querySelector(".config-bar")
+  if (!configBar) return
+
+  // Add a subtle "ready to begin" hint for desktop users after config loads
+  if (!isMobileDevice && !prefersReducedMotion) {
+    setTimeout(() => {
+      const startButton = document.querySelector(".button-primary")
+      if (startButton && !hasPlayedTapWelcome) {
+        // Desktop gets a subtle pulse guide via CSS animation already applied
+        // This function can be extended for future interactions
+      }
+    }, 1500)
+  }
+
+  // Mobile optimization: show device-specific cues
+  if (isMobileDevice) {
+    // Ensure touch targets are optimized
+    document.querySelectorAll(".button, .rating-box, .config-chip span").forEach((el) => {
+      el.style.minHeight ||= "44px"
+    })
+  }
+}
+
+/**
+ * Enhanced welcome animation with device context
+ * Shows different messages for mobile vs desktop
+ */
+function showDeviceContextWelcome() {
+  const deviceMessage = isMobileDevice
+    ? "Ready to explore your type?"
+    : "Ready to discover your archetype?"
+
+  showWelcomeBanner(deviceMessage)
 }
