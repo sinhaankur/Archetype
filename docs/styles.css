@@ -12,19 +12,22 @@
   --border: hsl(0 0% 15%);
   --muted-foreground: hsl(0 0% 28%);
   --shadow: 4px 4px 0 0 hsl(0 0% 0% / 1);
+  --shadow-hover: 6px 6px 0 0 hsl(0 0% 0% / 1);
   --shadow-soft: 8px 8px 0 0 hsl(0 0% 0% / 0.18);
   --radius: 0px;
   --font-sans: "DM Sans", sans-serif;
   --font-mono: "Space Mono", monospace;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 140ms;
+  --duration-base: 240ms;
+  --duration-slow: 400ms;
 }
 
-* {
-  box-sizing: border-box;
-}
+/* ── Reset & base ────────────────────────────────────────── */
+* { box-sizing: border-box; }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
@@ -32,27 +35,25 @@ body {
   font-family: var(--font-sans);
   color: var(--foreground);
   background:
-    radial-gradient(circle at top left, hsl(50 100% 55% / 0.22), transparent 28%),
+    radial-gradient(circle at top left,  hsl(50 100% 55% / 0.22), transparent 28%),
     radial-gradient(circle at bottom right, hsl(216 85% 45% / 0.18), transparent 30%),
     linear-gradient(180deg, hsl(45 15% 97%), hsl(45 22% 94%));
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+/* Loading mask: prevents flash of unstyled animation state */
+body.js-loading * { animation-play-state: paused !important; }
 
-button,
-input {
-  font: inherit;
-}
+a  { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
 
+/* ── Layout shell ────────────────────────────────────────── */
 .page-shell {
   width: min(1240px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 1rem 0 4rem;
 }
 
+/* ── Shared box styling ──────────────────────────────────── */
 .hero,
 .sidebar-card,
 .question-card,
@@ -68,12 +69,14 @@ input {
   box-shadow: var(--shadow);
 }
 
+/* ── Hero ────────────────────────────────────────────────── */
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
   gap: 1.5rem;
   padding: 1.5rem;
   background: linear-gradient(135deg, hsl(0 0% 100%), hsl(45 10% 90%));
+  animation: slideDown var(--duration-slow) var(--ease-out) both;
 }
 
 .hero-copy h1 {
@@ -90,6 +93,7 @@ input {
   color: var(--muted-foreground);
 }
 
+/* ── Eyebrow ─────────────────────────────────────────────── */
 .eyebrow {
   display: inline-block;
   padding: 0.35rem 0.6rem;
@@ -102,11 +106,9 @@ input {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+.eyebrow.small { font-size: 0.72rem; }
 
-.eyebrow.small {
-  font-size: 0.72rem;
-}
-
+/* ── Hero actions ────────────────────────────────────────── */
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -120,18 +122,10 @@ input {
   align-content: start;
 }
 
-.stat-card {
-  padding: 1rem;
-  background: var(--card);
-}
-
-.accent-yellow {
-  background: hsl(50 100% 55% / 0.55);
-}
-
-.accent-blue {
-  background: hsl(216 85% 45% / 0.12);
-}
+/* ── Stat cards ──────────────────────────────────────────── */
+.stat-card { padding: 1rem; background: var(--card); }
+.accent-yellow { background: hsl(50 100% 55% / 0.55); }
+.accent-blue   { background: hsl(216 85% 45% / 0.12); }
 
 .stat-label {
   display: block;
@@ -158,6 +152,7 @@ input {
   color: var(--muted-foreground);
 }
 
+/* ── Main layout ─────────────────────────────────────────── */
 .layout {
   display: grid;
   grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
@@ -166,6 +161,7 @@ input {
   align-items: start;
 }
 
+/* ── Sidebar ─────────────────────────────────────────────── */
 .sidebar-card {
   position: sticky;
   top: 1rem;
@@ -173,12 +169,10 @@ input {
   background: var(--card);
   display: grid;
   gap: 1rem;
+  animation: slideRight var(--duration-slow) var(--ease-out) 100ms both;
 }
 
-.sidebar-section {
-  display: grid;
-  gap: 0.6rem;
-}
+.sidebar-section { display: grid; gap: 0.6rem; }
 
 .progress-bar {
   overflow: hidden;
@@ -190,7 +184,7 @@ input {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, var(--primary), var(--accent));
-  transition: width 160ms ease;
+  transition: width 320ms var(--ease-spring);
 }
 
 .scale-list {
@@ -219,6 +213,7 @@ input {
   font-weight: 700;
 }
 
+/* ── Content column ──────────────────────────────────────── */
 .content-column {
   display: grid;
   gap: 1rem;
@@ -229,10 +224,28 @@ input {
   gap: 1rem;
 }
 
+/* ── Question cards ──────────────────────────────────────── */
 .question-card {
   margin: 0;
   padding: 1rem;
   background: var(--card);
+  transition:
+    box-shadow var(--duration-base) ease,
+    border-color var(--duration-base) ease,
+    transform var(--duration-base) var(--ease-spring);
+  /* stagger set via JS inline style --i */
+  animation: cardIn var(--duration-slow) var(--ease-out) calc(var(--i, 0) * 55ms) both;
+}
+
+.question-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* answered state */
+.question-card.is-answered {
+  border-color: var(--primary);
+  box-shadow: 4px 4px 0 0 var(--primary);
 }
 
 .question-header {
@@ -243,6 +256,7 @@ input {
   margin-bottom: 0.9rem;
 }
 
+/* ── Trait pill ──────────────────────────────────────────── */
 .trait-pill {
   display: inline-flex;
   align-items: center;
@@ -254,11 +268,11 @@ input {
   font-weight: 700;
 }
 
-.trait-ind { background: hsl(0 85% 45%); color: white; }
-.trait-emp { background: hsl(50 100% 55%); color: hsl(0 0% 10%); }
-.trait-wis { background: hsl(216 85% 45%); color: white; }
-.trait-skl { background: hsl(45 10% 88%); color: hsl(0 0% 5%); }
-.trait-cre { background: hsl(0 0% 100%); color: hsl(0 0% 5%); }
+.trait-ind { background: hsl(0 85% 45%);    color: white; }
+.trait-emp { background: hsl(50 100% 55%);  color: hsl(0 0% 10%); }
+.trait-wis { background: hsl(216 85% 45%);  color: white; }
+.trait-skl { background: hsl(45 10% 88%);   color: hsl(0 0% 5%); }
+.trait-cre { background: hsl(0 0% 100%);    color: hsl(0 0% 5%); }
 
 .question-text {
   padding: 0;
@@ -268,6 +282,7 @@ input {
   line-height: 1.45;
 }
 
+/* ── Rating grid ─────────────────────────────────────────── */
 .rating-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -287,11 +302,17 @@ input {
   padding: 0.8rem 0.65rem;
   background: var(--background);
   cursor: pointer;
-  transition: transform 120ms ease, background 120ms ease, color 120ms ease;
+  transition:
+    transform var(--duration-fast) var(--ease-spring),
+    background var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+  will-change: transform;
 }
 
 .rating-box:hover {
-  transform: translate(-2px, -2px);
+  transform: translate(-2px, -2px) scale(1.03);
+  box-shadow: var(--shadow-hover);
 }
 
 .rating-option input:focus-visible + .rating-box {
@@ -302,6 +323,9 @@ input {
 .rating-option input:checked + .rating-box {
   background: var(--primary);
   color: var(--primary-foreground);
+  transform: translate(-2px, -2px) scale(1.06);
+  box-shadow: var(--shadow-hover);
+  animation: pop var(--duration-base) var(--ease-spring);
 }
 
 .rating-value {
@@ -314,27 +338,34 @@ input {
   line-height: 1.25;
 }
 
+/* ── Action row ──────────────────────────────────────────── */
 .action-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
+/* ── Buttons ─────────────────────────────────────────────── */
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.45rem;
   min-height: 48px;
   padding: 0.8rem 1.2rem;
   font-weight: 800;
-  transition: transform 120ms ease, box-shadow 120ms ease;
   background: var(--card);
   color: var(--foreground);
   cursor: pointer;
+  transition:
+    transform var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) ease;
+  will-change: transform;
 }
 
 .button:hover {
   transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hover);
 }
 
 .button:active {
@@ -352,13 +383,50 @@ input {
   color: var(--secondary-foreground);
 }
 
+.btn-icon {
+  transition: transform var(--duration-base) var(--ease-spring);
+}
+.button:hover .btn-icon {
+  transform: translateX(4px);
+}
+
+/* Answer-again button inside result-score-box */
+.button-answer-again {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+  min-height: 38px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border: 2px solid var(--border);
+  background: hsl(45 15% 97%);
+  color: var(--foreground);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform var(--duration-fast) var(--ease-spring), box-shadow var(--duration-fast) ease;
+}
+.button-answer-again:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hover);
+}
+.button-answer-again:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* ── Result card ─────────────────────────────────────────── */
 .result-card {
   padding: 1rem;
   background: var(--card);
 }
 
-.is-hidden {
-  display: none;
+.is-hidden { display: none; }
+
+/* entrance animation when result is shown */
+.result-card.is-visible {
+  animation: resultReveal var(--duration-slow) var(--ease-out) both;
 }
 
 .result-hero {
@@ -376,6 +444,7 @@ input {
   margin: 0.4rem 0 0.65rem;
   font-size: clamp(2rem, 4vw, 3.2rem);
   line-height: 0.95;
+  animation: slideDown 360ms var(--ease-spring) 60ms both;
 }
 
 .result-description {
@@ -390,6 +459,8 @@ input {
   background: hsl(45 15% 97%);
   color: var(--foreground);
   box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
 }
 
 .result-grid {
@@ -399,6 +470,7 @@ input {
   margin-top: 1rem;
 }
 
+/* ── Panels ──────────────────────────────────────────────── */
 .panel,
 .summary-panel {
   padding: 1rem;
@@ -411,7 +483,7 @@ input {
   font-size: 1.05rem;
 }
 
-/* ── Config bar (gender + mode selectors) ─────────────────── */
+/* ── Config bar ──────────────────────────────────────────── */
 .config-bar {
   display: flex;
   flex-wrap: wrap;
@@ -421,6 +493,7 @@ input {
   border: 2px solid var(--border);
   background: var(--card);
   box-shadow: var(--shadow);
+  animation: slideDown var(--duration-slow) var(--ease-out) 80ms both;
 }
 
 .config-group {
@@ -435,9 +508,7 @@ input {
   gap: 0.55rem;
 }
 
-.config-chip {
-  cursor: pointer;
-}
+.config-chip { cursor: pointer; }
 
 .config-chip input {
   position: absolute;
@@ -454,19 +525,25 @@ input {
   box-shadow: var(--shadow);
   font-size: 0.88rem;
   font-weight: 700;
-  transition: background 100ms ease, transform 100ms ease;
+  transition:
+    background var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) ease;
 }
 
 .config-chip input:checked + span {
   background: var(--foreground);
   color: var(--card);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-hover);
 }
 
 .config-chip span:hover {
   transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-hover);
 }
-/* ─────────────────────────────────────────────────────────── */
 
+/* ── Trait & ranking rows ────────────────────────────────── */
 .trait-stack,
 .ranking-list {
   display: grid;
@@ -478,6 +555,7 @@ input {
   padding: 0.85rem;
   border: 2px solid var(--border);
   background: var(--background);
+  animation: cardIn 300ms var(--ease-out) calc(var(--i, 0) * 70ms) both;
 }
 
 .trait-row-header,
@@ -499,7 +577,9 @@ input {
 
 .mini-progress-fill {
   height: 100%;
+  width: 0%;
   background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transition: width 600ms var(--ease-spring);
 }
 
 .ranking-row p,
@@ -509,6 +589,7 @@ input {
   line-height: 1.5;
 }
 
+/* ── Summary + share ─────────────────────────────────────── */
 .summary-panel {
   margin-top: 1rem;
   display: grid;
@@ -530,11 +611,98 @@ input {
   min-height: 40px;
 }
 
-.share-x        { background: hsl(0 0% 5%);    color: white; }
-.share-linkedin { background: hsl(210 100% 35%); color: white; }
-.share-wa       { background: hsl(142 70% 35%);  color: white; }
+.share-x        { background: hsl(0 0% 5%);      color: white; }
+.share-linkedin { background: hsl(210 100% 35%);  color: white; }
+.share-wa       { background: hsl(142 70% 35%);   color: white; }
 
+/* ── Confetti canvas ─────────────────────────────────────── */
+#confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
 
+/* ── Floating progress pill ──────────────────────────────── */
+.floating-progress {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.9rem;
+  border: 2px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  transition: opacity 200ms ease, transform 200ms var(--ease-spring);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+
+.floating-progress.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.floating-progress-fill {
+  display: inline-block;
+  width: 60px;
+  height: 8px;
+  border: 2px solid var(--border);
+  background: var(--card-muted);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.floating-progress-fill span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  transition: width 300ms var(--ease-spring);
+}
+
+/* ── Keyframes ───────────────────────────────────────────── */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(22px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+@keyframes resultReveal {
+  from { opacity: 0; transform: translateY(28px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+@keyframes pop {
+  0%   { transform: translate(-2px, -2px) scale(1); }
+  50%  { transform: translate(-2px, -2px) scale(1.14); }
+  100% { transform: translate(-2px, -2px) scale(1.06); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-5px); }
+  40%       { transform: translateX(5px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 980px) {
   .hero,
   .layout,
@@ -544,15 +712,11 @@ input {
     grid-template-columns: 1fr;
   }
 
-  .sidebar-card {
-    position: static;
-  }
+  .sidebar-card { position: static; }
 }
 
 @media (max-width: 720px) {
-  .page-shell {
-    width: min(100% - 1rem, 1240px);
-  }
+  .page-shell { width: min(100% - 1rem, 1240px); }
 
   .hero,
   .sidebar-card,
@@ -563,9 +727,7 @@ input {
     box-shadow: var(--shadow-soft);
   }
 
-  .question-text {
-    font-size: 1.05rem;
-  }
+  .question-text { font-size: 1.05rem; }
 
   .rating-grid {
     grid-template-columns: 1fr;
@@ -578,18 +740,12 @@ input {
     gap: 0.65rem;
   }
 
-  .hero-copy h1 {
-    max-width: 100%;
-  }
+  .hero-copy h1 { max-width: 100%; }
 
   .action-row,
-  .hero-actions {
-    flex-direction: column;
-  }
+  .hero-actions { flex-direction: column; }
 
-  .button {
-    width: 100%;
-  }
+  .button { width: 100%; }
 
   .question-header,
   .trait-row-header,
@@ -597,4 +753,32 @@ input {
     flex-direction: column;
     align-items: start;
   }
+
+  .floating-progress { display: none; }
 }
+
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  color: var(--foreground);
+  background:
+    radial-gradient(circle at top left, hsl(50 100% 55% / 0.22), transparent 28%),
+    radial-gradient(circle at bottom right, hsl(216 85% 45% / 0.18), transparent 30%),
+    linear-gradient(180deg, hsl(45 15% 97%), hsl(45 22% 94%));
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+

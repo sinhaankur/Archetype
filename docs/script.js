@@ -109,27 +109,86 @@ const ARCHETYPE_DESCRIPTIONS = {
 
 const STORAGE_KEY = "archetype-pages-v2" // bumped from v1 to bust stale cached answers
 
-const form = document.querySelector("#archetype-form")
+// ─── DOM refs ────────────────────────────────────────────────────────────────
+const form             = document.querySelector("#archetype-form")
 const questionTemplate = document.querySelector("#question-template")
-const ratingTemplate = document.querySelector("#rating-template")
-const calculateButton = document.querySelector("#calculate-button")
-const resetButton = document.querySelector("#reset-button")
+const ratingTemplate   = document.querySelector("#rating-template")
+const calculateButton  = document.querySelector("#calculate-button")
+const resetButton      = document.querySelector("#reset-button")
+const answerAgainButton= document.querySelector("#answer-again-button")
 const copySummaryButton  = document.querySelector("#copy-summary-button")
 const shareXButton       = document.querySelector("#share-x-button")
 const shareLinkedinButton= document.querySelector("#share-linkedin-button")
 const shareWaButton      = document.querySelector("#share-wa-button")
-const resultCard = document.querySelector("#result-card")
-const answeredCount = document.querySelector("#answered-count")
-const progressFill = document.querySelector("#progress-fill")
-const progressCopy = document.querySelector("#progress-copy")
-const topName = document.querySelector("#top-name")
-const topDescription = document.querySelector("#top-description")
-const topScore = document.querySelector("#top-score")
-const traitBreakdown = document.querySelector("#trait-breakdown")
-const rankingList = document.querySelector("#ranking-list")
-const summaryText = document.querySelector("#summary-text")
+const resultCard       = document.querySelector("#result-card")
+const answeredCount    = document.querySelector("#answered-count")
+const progressFill     = document.querySelector("#progress-fill")
+const progressCopy     = document.querySelector("#progress-copy")
+const topName          = document.querySelector("#top-name")
+const topDescription   = document.querySelector("#top-description")
+const topScore         = document.querySelector("#top-score")
+const traitBreakdown   = document.querySelector("#trait-breakdown")
+const rankingList      = document.querySelector("#ranking-list")
+const summaryText      = document.querySelector("#summary-text")
+
+// ─── Floating progress pill ──────────────────────────────────────────────────
+const floatPill = document.createElement("div")
+floatPill.className = "floating-progress"
+floatPill.innerHTML = `<span id="float-count">0</span>/<span id="float-total">10</span>\u00a0answered <div class="floating-progress-fill"><span id="float-bar"></span></div>`
+document.body.appendChild(floatPill)
+const floatCount = document.querySelector("#float-count")
+const floatTotal = document.querySelector("#float-total")
+const floatBar   = document.querySelector("#float-bar")
+
+// ─── Confetti ────────────────────────────────────────────────────────────────
+const confettiCanvas    = document.createElement("canvas")
+confettiCanvas.id       = "confetti-canvas"
+document.body.appendChild(confettiCanvas)
+const confettiCtx       = confettiCanvas.getContext("2d")
+let   confettiParticles = []
+let   confettiRaf       = null
+
+function launchConfetti() {
+  confettiCanvas.width  = window.innerWidth
+  confettiCanvas.height = window.innerHeight
+  const colors = ["#E8182A", "#F5C800", "#1A5FD4", "#111", "#fff"]
+  confettiParticles = Array.from({ length: 120 }, () => ({
+    x: Math.random() * confettiCanvas.width,
+    y: -10 - Math.random() * 60,
+    w: 8 + Math.random() * 8,
+    h: 4 + Math.random() * 6,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rotation: Math.random() * Math.PI * 2,
+    vx: -2 + Math.random() * 4,
+    vy: 3 + Math.random() * 5,
+    vr: -0.08 + Math.random() * 0.16,
+    life: 1,
+    decay: 0.008 + Math.random() * 0.006,
+  }))
+  if (confettiRaf) cancelAnimationFrame(confettiRaf)
+  tickConfetti()
+}
+
+function tickConfetti() {
+  confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height)
+  confettiParticles.forEach((p) => {
+    p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.rotation += p.vr; p.life -= p.decay
+    confettiCtx.save()
+    confettiCtx.globalAlpha = Math.max(0, p.life)
+    confettiCtx.translate(p.x, p.y)
+    confettiCtx.rotate(p.rotation)
+    confettiCtx.fillStyle = p.color
+    confettiCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h)
+    confettiCtx.restore()
+  })
+  confettiParticles = confettiParticles.filter((p) => p.life > 0)
+  if (confettiParticles.length) confettiRaf = requestAnimationFrame(tickConfetti)
+}
 
 let answers = loadAnswers()
+
+// Remove loading guard after first frame
+requestAnimationFrame(() => document.body.classList.remove("js-loading"))
 
 renderQuestions()
 updateProgress()
@@ -138,22 +197,39 @@ calculateButton.addEventListener("click", () => {
   const missingQuestion = QUESTIONS.find((question) => typeof answers[question.id] !== "number")
 
   if (missingQuestion) {
-    document.querySelector(`[data-question-id="${missingQuestion.id}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" })
+    const el = document.querySelector(`[data-question-id="${missingQuestion.id}"]`)
+    el?.scrollIntoView({ behavior: "smooth", block: "center" })
+    if (el) {
+      el.style.animation = "none"
+      requestAnimationFrame(() => { el.style.animation = "shake 320ms ease" })
+    }
     return
   }
 
   const averages = calculateAverages(answers)
-  const ranking = rankArchetypes(averages)
+  const ranking  = rankArchetypes(averages)
   renderResults(averages, ranking)
 })
 
-resetButton.addEventListener("click", () => {
+resetButton.addEventListener("click", doReset)
+
+if (answerAgainButton) {
+  answerAgainButton.addEventListener("click", () => {
+    resultCard.classList.remove("is-visible")
+    resultCard.classList.add("is-hidden")
+    document.querySelector("#assessment")?.scrollIntoView({ behavior: "smooth", block: "start" })
+    doReset()
+  })
+}
+
+function doReset() {
   answers = {}
   persistState()
   renderQuestions()
   updateProgress()
+  resultCard.classList.remove("is-visible")
   resultCard.classList.add("is-hidden")
-})
+}
 
 copySummaryButton.addEventListener("click", async () => {
   const text = summaryText.textContent || ""
@@ -206,7 +282,7 @@ function renderQuestions() {
   _rendering = true
   form.innerHTML = ""
 
-  for (const question of QUESTIONS) {
+  QUESTIONS.forEach((question, idx) => {
     const fragment = questionTemplate.content.cloneNode(true)
     const fieldset = fragment.querySelector("fieldset")
     const traitPill = fragment.querySelector(".trait-pill")
@@ -216,6 +292,8 @@ function renderQuestions() {
     const selectedValue = answers[question.id]
 
     fieldset.dataset.questionId = String(question.id)
+    fieldset.style.setProperty("--i", idx)
+    if (selectedValue) fieldset.classList.add("is-answered")
     traitPill.textContent = TRAIT_LABELS[question.trait]
     traitPill.classList.add(TRAIT_CLASSES[question.trait])
     status.textContent = selectedValue ? `Selected: ${selectedValue} / 5` : "Not answered"
@@ -237,6 +315,7 @@ function renderQuestions() {
         persistState()
         renderQuestions()
         updateProgress()
+        resultCard.classList.remove("is-visible")
         resultCard.classList.add("is-hidden")
       })
 
@@ -247,16 +326,25 @@ function renderQuestions() {
     }
 
     form.appendChild(fragment)
-  }
+  })
   _rendering = false
 }
 
 function updateProgress() {
-  const count = QUESTIONS.filter((question) => typeof answers[question.id] === "number").length
+  const count   = QUESTIONS.filter((q) => typeof answers[q.id] === "number").length
   const percent = Math.round((count / QUESTIONS.length) * 100)
 
   answeredCount.textContent = String(count)
-  progressFill.style.width = `${percent}%`
+  progressFill.style.width  = `${percent}%`
+
+  floatCount.textContent = String(count)
+  floatTotal.textContent = String(QUESTIONS.length)
+  floatBar.style.width   = `${percent}%`
+  if (count > 0 && count < QUESTIONS.length) {
+    floatPill.classList.add("is-visible")
+  } else {
+    floatPill.classList.remove("is-visible")
+  }
 
   if (count === QUESTIONS.length) {
     progressCopy.textContent = "All answers are in. Calculate your ranked result below."
@@ -359,7 +447,21 @@ function renderResults(averages, ranking) {
   summaryText.textContent = `Your dominant result is ${top.name} with a match strength of ${top.score.toFixed(2)}. Your strongest expressed traits are ${topTraitsText}. ${ARCHETYPE_DESCRIPTIONS[top.name]}`
 
   resultCard.classList.remove("is-hidden")
+  requestAnimationFrame(() => resultCard.classList.add("is-visible"))
   resultCard.scrollIntoView({ behavior: "smooth", block: "start" })
+
+  // stagger mini-bar fills after reveal
+  document.querySelectorAll(".mini-progress-fill").forEach((bar, i) => {
+    const target = bar.style.width
+    bar.style.width = "0%"
+    setTimeout(() => { bar.style.width = target }, 80 + i * 90)
+  })
+
+  document.querySelectorAll(".trait-row, .ranking-row").forEach((row, i) => {
+    row.style.setProperty("--i", i)
+  })
+
+  launchConfetti()
 }
 
 function average(values) {
