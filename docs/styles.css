@@ -801,6 +801,33 @@ button, input { font: inherit; }
   height: 0;
   pointer-events: none;
   z-index: 10002;
+  --burst-ring: var(--primary);
+  --burst-fill: hsl(50 100% 55% / 0.35);
+  --burst-dot: var(--accent);
+}
+
+.tap-burst[data-theme="primary"] {
+  --burst-ring: hsl(0 85% 45%);
+  --burst-fill: hsl(0 85% 45% / 0.28);
+  --burst-dot: hsl(50 100% 55%);
+}
+
+.tap-burst[data-theme="secondary"] {
+  --burst-ring: hsl(50 100% 45%);
+  --burst-fill: hsl(50 100% 55% / 0.35);
+  --burst-dot: hsl(0 85% 45%);
+}
+
+.tap-burst[data-theme="rating"] {
+  --burst-ring: hsl(216 85% 45%);
+  --burst-fill: hsl(216 85% 45% / 0.28);
+  --burst-dot: hsl(50 100% 55%);
+}
+
+.tap-burst[data-theme="config"] {
+  --burst-ring: hsl(0 0% 15%);
+  --burst-fill: hsl(0 0% 15% / 0.2);
+  --burst-dot: hsl(0 85% 45%);
 }
 
 .tap-ring {
@@ -809,9 +836,9 @@ button, input { font: inherit; }
   height: 14px;
   margin-left: -7px;
   margin-top: -7px;
-  border: 2px solid var(--primary);
+  border: 2px solid var(--burst-ring);
   border-radius: 999px;
-  background: hsl(50 100% 55% / 0.35);
+  background: var(--burst-fill);
   animation: tapSparkRing 520ms var(--ease-out) both;
 }
 
@@ -822,7 +849,7 @@ button, input { font: inherit; }
   margin-left: -3px;
   margin-top: -3px;
   border-radius: 999px;
-  background: var(--accent);
+  background: var(--burst-dot);
   transform: rotate(var(--a)) translateX(0);
   animation: tapSparkDot 520ms var(--ease-out) both;
 }

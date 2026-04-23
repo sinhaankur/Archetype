@@ -592,7 +592,7 @@ function showWelcomeBanner(message) {
 function initDelightInteractions() {
   document.addEventListener("pointerdown", (event) => {
     if (!prefersReducedMotion) {
-      playTapSpark(event.clientX, event.clientY)
+      playTapSpark(event.clientX, event.clientY, event.target)
       playPagePulse()
     }
 
@@ -603,11 +603,12 @@ function initDelightInteractions() {
   }, { passive: true })
 }
 
-function playTapSpark(x, y) {
+function playTapSpark(x, y, sourceTarget) {
   const burst = document.createElement("span")
   burst.className = "tap-burst"
   burst.style.left = `${x}px`
   burst.style.top = `${y}px`
+  burst.dataset.theme = resolveBurstTheme(sourceTarget)
 
   const ring = document.createElement("span")
   ring.className = "tap-ring"
@@ -622,6 +623,17 @@ function playTapSpark(x, y) {
 
   document.body.appendChild(burst)
   window.setTimeout(() => burst.remove(), 560)
+}
+
+function resolveBurstTheme(sourceTarget) {
+  if (!(sourceTarget instanceof Element)) return "default"
+
+  if (sourceTarget.closest(".button-primary")) return "primary"
+  if (sourceTarget.closest(".button-secondary")) return "secondary"
+  if (sourceTarget.closest(".rating-box")) return "rating"
+  if (sourceTarget.closest(".config-chip")) return "config"
+
+  return "default"
 }
 
 function playPagePulse() {
